@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/Graphity/surge/pkg/app"
+	"github.com/Graphity/surge/server/app"
 	"log"
 	"net/http"
 )
