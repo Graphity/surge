@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/Graphity/surge/server/instructor/entity"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -11,13 +12,35 @@ type InstructorRepository interface {
 	Update(instructor entity.Instructor)
 	Delete(instructor entity.Instructor)
 	FindById(id int) entity.Instructor
-	FindByFirstName(firstName string) []entity.Instructor
-	FindByLastName(lastName string) []entity.Instructor
-	FindByPhoneNumber(phoneNumber string) entity.Instructor
-	FindByEmail(email string) entity.Instructor
-	FindByLinkedIn(linkedIn string) entity.Instructor
-	FindByRating(rating int) []entity.Instructor
-	CloseDB()
+	FindAll() []entity.Instructor
+}
+type database struct {
+	conn *gorm.DB
+}
+
+func (db *database) Save(instructor entity.Instructor) {
+	db.conn.Create(&instructor)
+}
+
+func (db *database) Update(instructor entity.Instructor) {
+	db.conn.Save(&instructor)
+}
+
+func (db *database) Delete(instructor entity.Instructor) {
+	db.conn.Delete(&instructor)
+}
+
+func (db *database) FindById(id int) entity.Instructor {
+	result := entity.Instructor{}
+	data := db.conn.Find(&result, id)
+	fmt.Println(data)
+	return entity.Instructor{}
+}
+
+func (db *database) FindAll() []entity.Instructor {
+	var courses []entity.Instructor
+	db.conn.Set("gorm:auto_preload", true).Find(&courses)
+	return courses
 }
 
 func NewInstructorRepository() InstructorRepository {
@@ -28,58 +51,17 @@ func NewInstructorRepository() InstructorRepository {
 	}
 	err = db.AutoMigrate(&entity.Instructor{})
 	if err != nil {
-		panic("Failed to migrate: Instructor")
+		panic("Failed to migrate: Course")
 	}
-	return &databaseInstructor{
-		connection: db,
+	return &database{
+		conn: db,
 	}
 }
 
-type databaseInstructor struct {
-	connection *gorm.DB
-}
-
-func (db databaseInstructor) Save(instructor entity.Instructor) {
-
-	panic("implement me")
-}
-
-func (db databaseInstructor) Update(instructor entity.Instructor) {
-	panic("implement me")
-}
-
-func (db databaseInstructor) Delete(instructor entity.Instructor) {
-	panic("implement me")
-}
-
-func (db databaseInstructor) FindById(id int) entity.Instructor {
-	panic("implement me")
-}
-
-func (db databaseInstructor) FindByFirstName(firstName string) []entity.Instructor {
-	panic("implement me")
-}
-
-func (db databaseInstructor) FindByLastName(lastName string) []entity.Instructor {
-	panic("implement me")
-}
-
-func (db databaseInstructor) FindByPhoneNumber(phoneNumber string) entity.Instructor {
-	panic("implement me")
-}
-
-func (db databaseInstructor) FindByEmail(email string) entity.Instructor {
-	panic("implement me")
-}
-
-func (db databaseInstructor) FindByLinkedIn(linkedIn string) entity.Instructor {
-	panic("implement me")
-}
-
-func (db databaseInstructor) FindByRating(rating int) []entity.Instructor {
-	panic("implement me")
-}
-
-func (db databaseInstructor) CloseDB() {
-	panic("implement me")
+func (db *database) AutoMigration() error {
+	err := db.conn.AutoMigrate(&entity.Instructor{})
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -1,11 +1,15 @@
 package db
 
 import (
-	"github.com/Graphity/surge/server/course/repository"
-	"github.com/Graphity/surge/server/course/service"
+	courseRepository "github.com/Graphity/surge/server/course/repository"
+	courseService "github.com/Graphity/surge/server/course/service"
+	instructorRepository "github.com/Graphity/surge/server/instructor/repository"
+	instructorService "github.com/Graphity/surge/server/instructor/service"
 )
 
 var (
-	CourseRepository = repository.NewCourseRepository()
-	CourseService    = service.New(CourseRepository)
+	CourseRepository = courseRepository.NewCourseRepository()
+	CourseService    = courseService.New(CourseRepository)
+	InstructorRepository = instructorRepository.NewInstructorRepository()
+	InstructorService = instructorService.New(InstructorRepository)
 )
