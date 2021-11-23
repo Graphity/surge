@@ -9,3 +9,10 @@ docker image build -t surge .
 ```shell
 docker container run -p 8080:8080 surge
 ```
+
+
+## Run PostgreSQL using Docker
+### navigate to the database folder and run the following command
+```shell
+docker-compose up
+```
