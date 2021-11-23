@@ -1,9 +1,12 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/Graphity/surge/server/course/entity"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+
+	//"gorm.io/gorm"
 )
 
 type CourseRepository interface {
@@ -11,13 +14,8 @@ type CourseRepository interface {
 	Update(course entity.Course)
 	Delete(course entity.Course)
 	FindById(id int) entity.Course
-	FindByTitle(title string) entity.Course
-	FindByCreditsQuantity(credits int) []entity.Course
 	FindAll() []entity.Course
-	FindAllMandatory() []entity.Course
-	FindAllNonMandatory() []entity.Course
-	FindBySemester(semester int) []entity.Course
-	CloseDB()
+	AutoMigration() error
 }
 
 func NewCourseRepository() CourseRepository {
@@ -39,6 +37,14 @@ type database struct {
 	conn *gorm.DB
 }
 
+func (db *database) AutoMigration() error {
+	err := db.conn.AutoMigrate(&entity.Course{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (db *database) Save(course entity.Course) {
 	db.conn.Create(&course)
 }
@@ -52,33 +58,14 @@ func (db *database) Delete(course entity.Course) {
 }
 
 func (db *database) FindById(id int) entity.Course {
-	panic("implement me")
-}
-
-func (db *database) FindByTitle(title string) entity.Course {
-	panic("implement me")
-}
-
-func (db *database) FindByCreditsQuantity(credits int) []entity.Course {
-	panic("implement me")
+	result := entity.Course{}
+	data := db.conn.Find(&result, id)
+	fmt.Println(data)
+	return entity.Course{}
 }
 
 func (db *database) FindAll() []entity.Course {
-	panic("implement me")
-}
-
-func (db *database) FindAllMandatory() []entity.Course {
-	panic("implement me")
-}
-
-func (db *database) FindAllNonMandatory() []entity.Course {
-	panic("implement me")
-}
-
-func (db *database) FindBySemester(semester int) []entity.Course {
-	panic("implement me")
-}
-
-func (db *database) CloseDB() {
-
+	var courses []entity.Course
+	db.conn.Set("gorm:auto_preload", true).Find(&courses)
+	return courses
 }
