@@ -1,23 +1,15 @@
 package app
 
 import (
-	"fmt"
-	"html/template"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-func Index(w http.ResponseWriter, r *http.Request) {
-	indexPath := "./web/static/index.html"
-	tmpl := template.Must(template.ParseFiles(indexPath))
-	err := tmpl.Execute(w, nil)
-	if err != nil {
-		return
-	}
+func Index(c *gin.Context) {
+	c.HTML(http.StatusOK, "index.html", nil)
 }
 
-func Ping(w http.ResponseWriter, r *http.Request) {
-	_, err := fmt.Fprintf(w, "pong\n")
-	if err != nil {
-		return
-	}
+func Ping(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"ping": "pong"})
 }

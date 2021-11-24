@@ -1,8 +1,8 @@
 package app
 
-import "net/http"
+import "github.com/gin-gonic/gin"
 
-func RegisterAllHandlers() {
-	http.HandleFunc("/", Index)
-	http.HandleFunc("/ping", Ping)
+func RegisterAllHandlers(r *gin.Engine) {
+	r.GET("/", Index)
+	r.GET("/ping", Ping)
 }
